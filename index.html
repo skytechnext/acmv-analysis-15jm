@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACMV Analysis &amp; Solutions — 15 Jalan Merlimau</title>
+<style>
+  :root{
+    --bg:#0f1419; --panel:#1a212b; --panel2:#222b38; --line:#30404f;
+    --ink:#e9eef3; --muted:#9fb0c0; --accent:#3ba9ff; --accent2:#22d3a8;
+    --ok:#2ecc71; --warn:#f5a623; --bad:#ff5a5f; --bad2:#ff8a5c;
+    --chip:#2a3543; --shadow:0 4px 18px rgba(0,0,0,.35);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#0c1116,#0f1419 240px);
+    color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-text-size-adjust:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:24px 18px 80px}
+  header.hero{padding:34px 26px;border-radius:18px;background:
+    radial-gradient(1200px 300px at 10% -20%,rgba(59,169,255,.25),transparent),
+    radial-gradient(900px 300px at 110% 0%,rgba(34,211,168,.18),transparent),
+    var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .eyebrow{letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:var(--accent);font-weight:700}
+  h1{margin:.3em 0 .15em;font-size:30px;line-height:1.15}
+  .sub{color:var(--muted);font-size:15px;max-width:62ch}
+  .meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .pill{background:var(--chip);border:1px solid var(--line);border-radius:999px;
+    padding:5px 12px;font-size:12.5px;color:var(--muted)}
+  .pill b{color:var(--ink)}
+  h2{font-size:22px;margin:42px 0 6px;scroll-margin-top:20px;
+    display:flex;align-items:center;gap:10px}
+  h2 .n{font-size:13px;color:var(--bg);background:var(--accent);border-radius:8px;
+    width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-weight:800;flex:0 0 auto}
+  h3{font-size:17px;margin:26px 0 8px;color:var(--accent2)}
+  p{margin:.5em 0}
+  .lead{color:var(--muted)}
+  .grid{display:grid;gap:14px}
+  .cards{grid-template-columns:repeat(4,1fr);margin-top:18px}
+  @media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .card .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .card .v{font-size:26px;font-weight:800;margin-top:4px;line-height:1}
+  .card .u{font-size:12px;color:var(--muted);margin-top:3px}
+  .card.bad .v{color:var(--bad)} .card.warn .v{color:var(--warn)} .card.ok .v{color:var(--ok)}
+  .verdict{margin-top:18px;border-left:4px solid var(--bad);background:var(--panel);
+    border-radius:0 14px 14px 0;padding:16px 18px}
+  .verdict b{color:var(--bad2)}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 18px;margin-top:14px;box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+  th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;position:sticky;top:0;background:var(--panel2)}
+  tbody tr:hover{background:rgba(59,169,255,.06)}
+  td.num{text-align:right;font-variant-numeric:tabular-nums}
+  .tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+  .t-ok{background:rgba(46,204,113,.15);color:#5fe39a;border:1px solid rgba(46,204,113,.4)}
+  .t-warn{background:rgba(245,166,35,.15);color:#ffc35a;border:1px solid rgba(245,166,35,.4)}
+  .t-bad{background:rgba(255,90,95,.15);color:#ff8a8e;border:1px solid rgba(255,90,95,.45)}
+  .bar{position:relative;height:30px;border-radius:7px;background:var(--panel2);
+    border:1px solid var(--line);overflow:hidden;min-width:160px}
+  .bar > span{position:absolute;left:0;top:0;bottom:0;display:flex;align-items:center;
+    padding-left:8px;font-size:11.5px;font-weight:700;color:#06121a;border-radius:6px 0 0 6px}
+  .b-ok{background:linear-gradient(90deg,#2ecc71,#22d3a8)}
+  .b-warn{background:linear-gradient(90deg,#f5a623,#ffca5a)}
+  .b-bad{background:linear-gradient(90deg,#ff5a5f,#ff8a5c)}
+  .cap-line{position:absolute;top:-3px;bottom:-3px;width:3px;background:#fff;box-shadow:0 0 0 1px #000}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;color:var(--muted);font-size:12.5px;margin-top:10px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  ul.clean{margin:.4em 0;padding-left:1.1em}
+  ul.clean li{margin:.32em 0}
+  .callout{border-radius:12px;padding:14px 16px;margin-top:12px;border:1px solid var(--line)}
+  .callout.cause{background:rgba(255,90,95,.07);border-color:rgba(255,90,95,.3)}
+  .callout.fix{background:rgba(34,211,168,.07);border-color:rgba(34,211,168,.3)}
+  .why{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:start;margin:12px 0;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .why .rank{width:34px;height:34px;border-radius:9px;background:var(--bad);color:#0c1116;
+    font-weight:800;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .why.r2 .rank{background:var(--bad2)} .why.r3 .rank{background:var(--warn)}
+  .why.r4 .rank{background:#c9a227} .why.r5 .rank{background:#8a9bb0;color:#0c1116} .why.r6 .rank{background:#6b7d92;color:#0c1116}
+  .why h4{margin:0 0 3px;font-size:15px}
+  .why p{margin:0;color:var(--muted);font-size:13.5px}
+  .opt{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:860px){.opt{grid-template-columns:1fr}}
+  .opt .card{display:flex;flex-direction:column;gap:8px}
+  .opt h4{margin:0;font-size:16px}
+  .opt .price{font-size:13px;color:var(--accent2);font-weight:700}
+  .rate{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted)}
+  .dots{letter-spacing:2px}
+  .rec{counter-reset:step}
+  .rec .step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+  .rec .step:last-child{border-bottom:0}
+  .rec .num{counter-increment:step;width:30px;height:30px;border-radius:50%;background:var(--accent);
+    color:#06121a;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .rec .num::before{content:counter(step)}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .toc a{font-size:12.5px;color:var(--muted);text-decoration:none;background:var(--chip);
+    border:1px solid var(--line);padding:5px 11px;border-radius:8px}
+  .toc a:hover{color:var(--ink);border-color:var(--accent)}
+  footer{margin-top:50px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+  .src{font-size:12px;color:var(--muted);margin-top:8px}
+  .note{font-size:12.5px;color:var(--muted);font-style:italic}
+  .kbd{font-family:ui-monospace,Consolas,monospace;background:var(--panel2);border:1px solid var(--line);
+    padding:1px 6px;border-radius:5px;font-size:12.5px;word-break:break-all}
+  .sysgrid{display:grid;grid-template-columns:130px 1fr 90px;gap:12px;align-items:center;font-size:13px}
+  .toc a,.pill{min-height:32px;display:inline-flex;align-items:center}
+
+  @media(max-width:768px){
+    .wrap{padding:18px 14px 60px}
+    header.hero{padding:24px 18px}
+    h1{font-size:24px}
+    h2{font-size:20px;margin-top:34px}
+    .verdict{padding:14px}
+    .sysgrid{grid-template-columns:1fr;gap:6px}
+    .sysgrid > div:nth-child(-n+3){display:none} /* hide the 3 column headers */
+    .sysgrid .bar{min-width:0;margin-bottom:6px}
+    .sysgrid > div[style*="text-align:right"]{text-align:left !important;margin-bottom:10px}
+  }
+  @media(max-width:480px){
+    .cards{grid-template-columns:1fr}
+    .card .v{font-size:23px}
+    h1{font-size:21px}
+    .sub{font-size:14px}
+  }
+  @media print{body{background:#fff;color:#000}.toc,.hero .meta-row{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">ACMV Engineering Review &amp; Remediation Plan</div>
+    <h1>Why 15 Jalan Merlimau Runs Hot — and How to Fix It</h1>
+    <p class="sub">A comparison of the <b>as-built air-conditioning system</b> against the project's
+    own <b>Daikin heat-load calculation</b>, with a root-cause diagnosis of the "too hot" complaint
+    and a phased solution plan.</p>
+    <div class="meta-row">
+      <span class="pill">Project: <b>15 Jalan Merlimau</b> (2-storey detached + basement + attic + sunken pool)</span>
+      <span class="pill">System: <b>Daikin VRV-A R410A</b> · 4 condensers</span>
+      <span class="pill">As-built: <b>RevA, 8 Feb 2025</b> (Indoxing Group)</span>
+      <span class="pill">Heat-load: <b>HL R0, 10 Jun 2026</b> (DK-BIM, auth. ZX)</span>
+    </div>
+    <nav class="toc">
+      <a href="#verdict">Verdict</a>
+      <a href="#basis">Design Basis</a>
+      <a href="#installed">As-Built Equipment</a>
+      <a href="#systems">System Comparison</a>
+      <a href="#rooms">Room-by-Room</a>
+      <a href="#causes">Root Causes</a>
+      <a href="#solutions">Solutions</a>
+      <a href="#plan">Action Plan</a>
+    </nav>
+  </header>
+
+  <!-- ============ VERDICT ============ -->
+  <h2 id="verdict"><span class="n">!</span>Executive Verdict</h2>
+  <div class="grid cards">
+    <div class="card bad"><div class="k">Calculated peak load</div><div class="v">128.9</div><div class="u">kW total · 36.6 RT · 439,800 BTU/h</div></div>
+    <div class="card warn"><div class="k">Installed condenser capacity</div><div class="v">106.3</div><div class="u">kW nominal · 30.2 RT</div></div>
+    <div class="card bad"><div class="k">Capacity shortfall</div><div class="v">−22.6</div><div class="u">kW · ~18% short (nominal)</div></div>
+    <div class="card bad"><div class="k">Worst floors (L1 &amp; L2)</div><div class="v">75%</div><div class="u">of required cooling installed</div></div>
+  </div>
+
+  <div class="verdict">
+    <p><b>The system is genuinely undersized — this is not a maintenance niggle.</b> The home's own
+    Daikin heat-load study calls for <b>128.9 kW</b> of cooling, but only <b>106.3 kW</b> of condenser
+    capacity was installed — and that 106 kW is the <i>nominal</i> rating, which de-rates further
+    because the design chases a very cold <b>23 °C</b> indoor target. The 1st storey (living/dining/kitchen)
+    and 2nd storey (bedrooms) are the worst hit, with only <b>three-quarters</b> of the cooling they need.
+    On a hot afternoon the compressors run flat-out yet still cannot pull these rooms down to setpoint —
+    exactly the "too hot" symptom the owner reports. Undersized indoor units, an aggressive design setpoint,
+    unshaded full-height glazing, and bedrooms with no dehumidified fresh air all compound it.</p>
+  </div>
+  <p class="note">All load figures are taken directly from the project's DK-BIM "Heat Load Calculation – Summary Report
+  (Revision 0)"; all equipment figures from the "ACMV As-Build Drawing RevA". Nominal VRV capacities are
+  manufacturer ratings at standard conditions and should be de-rated for the tropical / low-setpoint design point.</p>
+
+  <!-- ============ DESIGN BASIS ============ -->
+  <h2 id="basis"><span class="n">1</span>Design Basis (from the heat-load report)</h2>
+  <p class="lead">These assumptions drive the calculated load. Two of them — the 23 °C setpoint and the
+  full-height single-glazed tinted glass — inflate the demand and are central to the comfort problem.</p>
+  <div class="grid cards">
+    <div class="card"><div class="k">Indoor design</div><div class="v" style="font-size:22px">23 °C</div><div class="u">/ 60% RH — unusually cold</div></div>
+    <div class="card"><div class="k">Outdoor ambient</div><div class="v" style="font-size:22px">33 °C</div><div class="u">/ 64% RH (Singapore)</div></div>
+    <div class="card warn"><div class="k">Glazing</div><div class="v" style="font-size:22px">U 5.89</div><div class="u">tinted single glass · SC 0.70 · <b>no curtains</b></div></div>
+    <div class="card"><div class="k">Ceiling height</div><div class="v" style="font-size:22px">3.5–4.4 m</div><div class="u">large volumes; +5% safety factor</div></div>
+  </div>
+  <div class="panel">
+    <h3 style="margin-top:0">Why the design basis matters</h3>
+    <ul class="clean">
+      <li><b>23 °C setpoint:</b> ~2 °C colder than the usual 24–25 °C residential design. It both raises the
+      calculated load <i>and</i> lowers the achievable VRV capacity (coils run at a lower evaporating
+      temperature), so the equipment shortfall is effectively worse than the headline 18%.</li>
+      <li><b>Full-height tinted single glazing (U 5.89, SC 0.70, curtain "None"):</b> the single biggest gain
+      path. Unshaded glass admits both strong solar radiation and conductive heat, and it radiates onto
+      occupants — so rooms can <i>feel</i> hot near the glass even when air temperature is at setpoint.</li>
+      <li><b>Bedrooms = "No Outdoor Air intake":</b> no dehumidified fresh air is supplied upstairs; toilet
+      exhaust fans (TEF) then depressurise the rooms and pull in warm, humid outdoor air, pushing up
+      humidity — and high humidity reads as "hot".</li>
+    </ul>
+  </div>
+
+  <!-- ============ INSTALLED EQUIPMENT ============ -->
+  <h2 id="installed"><span class="n">2</span>What Was Actually Installed (As-Built RevA)</h2>
+  <p class="lead">Four independent Daikin VRV-A condensers on the roof, one per level, feeding 18 indoor fan-coil
+  units (ducted concealed + wall-mounted). Plus toilet exhaust fans for ventilation.</p>
+  <div class="panel scroll">
+  <table>
+    <thead><tr>
+      <th>System / Level</th><th>Condenser (CU)</th><th>Model</th><th class="num">Nominal kW</th>
+      <th class="num">BTU/h</th><th>Indoor units fed</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>System 1 — Basement</td><td>CU-1</td><td>RXQ8AYM</td><td class="num">22.4</td><td class="num">76,400</td><td>Family Ent. Rm (×2 ducted), Sitting, Guest Bdrm, Maid/Store</td></tr>
+      <tr><td>System 2 — 1st Storey</td><td>CU-2</td><td>RXQ12AYM</td><td class="num">33.5</td><td class="num">114,000</td><td>Living, Tea House, Dining+Dry Kitchen, Wet Kitchen</td></tr>
+      <tr><td>System 3 — 2nd Storey</td><td>CU-3</td><td>RXQ10AYM</td><td class="num">28.0</td><td class="num">95,500</td><td>Bedrooms 1–4, Family Area</td></tr>
+      <tr><td>System 4 — Attic</td><td>CU-4</td><td>RXQ8AYM</td><td class="num">22.4</td><td class="num">76,400</td><td>Master Bdrm, WIW, Study, Home Gym</td></tr>
+      <tr style="font-weight:700;background:var(--panel2)"><td colspan="3">TOTAL INSTALLED</td><td class="num">106.3</td><td class="num">362,300</td><td>18 fan-coil units</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="src">Ventilation: 10 × Airmate DP710-20A toilet/utility exhaust fans (TEF-1…10, ~198 CMH each).
+  No mechanical fresh-air supply or heat-recovery ventilation to the conditioned rooms.</p>
+
+  <!-- ============ SYSTEM COMPARISON ============ -->
+  <h2 id="systems"><span class="n">3</span>Capacity vs. Load — by System</h2>
+  <p class="lead">Each bar shows the <b>calculated cooling load</b> for that floor. The white line marks the
+  <b>installed condenser capacity</b>. Where the bar runs past the line, the system cannot meet demand.</p>
+  <div class="panel">
+    <!-- Scale: 1 kW = 1.9% width, full = ~52kW -->
+    <div class="sysgrid">
+      <div style="color:var(--muted)">System (floor)</div>
+      <div style="color:var(--muted)">Load (bar) vs installed capacity (▏white line)</div>
+      <div style="color:var(--muted);text-align:right">Coverage</div>
+
+      <div><b>S1 Basement</b><br><span class="note">22.5 / 22.4 kW</span></div>
+      <div class="bar"><span class="b-warn" style="width:86%">22.5 kW load</span><div class="cap-line" style="left:86%"></div></div>
+      <div style="text-align:right"><span class="tag t-warn">99%</span></div>
+
+      <div><b>S2 1st Storey</b><br><span class="note">44.5 / 33.5 kW</span></div>
+      <div class="bar"><span class="b-bad" style="width:100%">44.5 kW load</span><div class="cap-line" style="left:75%"></div></div>
+      <div style="text-align:right"><span class="tag t-bad">75%</span></div>
+
+      <div><b>S3 2nd Storey</b><br><span class="note">37.2 / 28.0 kW</span></div>
+      <div class="bar"><span class="b-bad" style="width:92%">37.2 kW load</span><div class="cap-line" style="left:69%"></div></div>
+      <div style="text-align:right"><span class="tag t-bad">75%</span></div>
+
+      <div><b>S4 Attic</b><br><span class="note">24.7 / 22.4 kW</span></div>
+      <div class="bar"><span class="b-warn" style="width:61%">24.7 kW load</span><div class="cap-line" style="left:55%"></div></div>
+      <div style="text-align:right"><span class="tag t-warn">91%</span></div>
+    </div>
+    <div class="legend">
+      <span><i style="background:linear-gradient(90deg,#ff5a5f,#ff8a5c)"></i>Load exceeds capacity by &gt;15%</span>
+      <span><i style="background:linear-gradient(90deg,#f5a623,#ffca5a)"></i>At / near capacity (no margin)</span>
+      <span><i style="background:#fff"></i>Installed condenser capacity</span>
+    </div>
+  </div>
+  <p class="note">Bars are scaled for comparison, not to absolute width. Room peaks occur at slightly different
+  hours, so the true coincident "block" load is a little below the arithmetic sum — but even after applying a
+  normal diversity factor (~0.85–0.90), the diversified block load still exceeds the installed nominal
+  capacity on every floor except the basement.</p>
+
+  <!-- ============ ROOM BY ROOM ============ -->
+  <h2 id="rooms"><span class="n">4</span>Room-by-Room: Indoor Unit vs. Calculated Load</h2>
+  <p class="lead">Even where the condenser had capacity, many <b>indoor fan-coils are smaller than the room's
+  own calculated peak</b> — so they physically cannot deliver enough cooling into the space. Coverage =
+  unit nominal ÷ room load.</p>
+  <div class="panel scroll">
+  <table>
+    <thead><tr>
+      <th>Room</th><th>Floor</th><th class="num">Area m²</th><th class="num">Load (W)</th>
+      <th>Installed indoor unit</th><th class="num">Unit kW</th><th class="num">Coverage</th><th>Status</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Family Entertainment Rm</td><td>Basement</td><td class="num">52.0</td><td class="num">10,876</td><td>2 × FXMQ50PAVE (duct)</td><td class="num">11.2</td><td class="num">103%</td><td><span class="tag t-ok">OK</span></td></tr>
+      <tr><td>Guest Bedroom</td><td>Basement</td><td class="num">28.5</td><td class="num">5,112</td><td>FXAQ50AVM (wall)</td><td class="num">5.6</td><td class="num">110%</td><td><span class="tag t-ok">OK</span></td></tr>
+      <tr><td>Maid / Store 2</td><td>Basement</td><td class="num">6.5</td><td class="num">2,661</td><td>FXAQ20AVM (wall)</td><td class="num">2.2</td><td class="num">83%</td><td><span class="tag t-warn">Tight</span></td></tr>
+      <tr><td>Sitting Area</td><td>Basement</td><td class="num">14.0</td><td class="num">3,891</td><td>FXAQ25AVM (wall)</td><td class="num">2.8</td><td class="num">72%</td><td><span class="tag t-bad">Under</span></td></tr>
+
+      <tr><td>Living</td><td>1st</td><td class="num">58.5</td><td class="num">15,124</td><td>FXFQ125PAVE</td><td class="num">14.0</td><td class="num">93%</td><td><span class="tag t-warn">Tight</span></td></tr>
+      <tr><td>Tea House</td><td>1st</td><td class="num">32.0</td><td class="num">6,524</td><td>FXMQ63PAVE (duct)</td><td class="num">7.1</td><td class="num">109%</td><td><span class="tag t-ok">OK</span></td></tr>
+      <tr><td>Dining + Dry Kitchen</td><td>1st</td><td class="num">49.0</td><td class="num">15,493</td><td>FXMQ100PAVE (1 unit, 2 rooms)</td><td class="num">11.2</td><td class="num">72%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Wet Kitchen</td><td>1st</td><td class="num">13.0</td><td class="num">7,317</td><td>FXAQ32AVM (wall)</td><td class="num">3.6</td><td class="num">49%</td><td><span class="tag t-bad">Severe</span></td></tr>
+
+      <tr><td>Bedroom 1</td><td>2nd</td><td class="num">31.0</td><td class="num">8,324</td><td>FXMQ50PAVE (duct)</td><td class="num">5.6</td><td class="num">67%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Bedroom 2</td><td>2nd</td><td class="num">31.0</td><td class="num">9,306</td><td>FXMQ50PAVE (duct)</td><td class="num">5.6</td><td class="num">60%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Bedroom 3</td><td>2nd</td><td class="num">23.0</td><td class="num">7,983</td><td>FXMQ40PAVE (duct)</td><td class="num">4.5</td><td class="num">56%</td><td><span class="tag t-bad">Severe</span></td></tr>
+      <tr><td>Bedroom 4</td><td>2nd</td><td class="num">21.0</td><td class="num">6,080</td><td>FXMQ40PAVE (duct)</td><td class="num">4.5</td><td class="num">74%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Family Area</td><td>2nd</td><td class="num">26.0</td><td class="num">5,503</td><td>FXMQ50PAVE (duct)</td><td class="num">5.6</td><td class="num">102%</td><td><span class="tag t-ok">OK</span></td></tr>
+
+      <tr><td>Master Bedroom</td><td>Attic</td><td class="num">27.0</td><td class="num">8,684</td><td>FXMQ63PAVE (duct)</td><td class="num">7.1</td><td class="num">82%</td><td><span class="tag t-warn">Tight</span></td></tr>
+      <tr><td>Walk-in Wardrobe</td><td>Attic</td><td class="num">25.0</td><td class="num">5,962</td><td>FXMQ32PAVE (duct)</td><td class="num">3.6</td><td class="num">60%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Study</td><td>Attic</td><td class="num">15.0</td><td class="num">4,870</td><td>FXMQ32PAVE (duct)</td><td class="num">3.6</td><td class="num">74%</td><td><span class="tag t-bad">Under</span></td></tr>
+      <tr><td>Home Gym</td><td>Attic</td><td class="num">13.0</td><td class="num">5,187</td><td>FXMQ50PAVE (duct)</td><td class="num">5.6</td><td class="num">108%</td><td><span class="tag t-ok">OK</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">"Severe" = the indoor unit can deliver only about half the room's calculated peak. The
+  <b>Wet Kitchen (49%)</b> and <b>Bedroom 3 (56%)</b> are the most starved; the upstairs bedrooms as a group
+  are consistently undersized.</p>
+
+  <!-- ============ ROOT CAUSES ============ -->
+  <h2 id="causes"><span class="n">5</span>Root-Cause Diagnosis: Why It Feels Too Hot</h2>
+  <p class="lead">Ranked by impact. The first two are capacity problems (the system can't make enough cold);
+  the rest are why the cold that <i>is</i> made doesn't translate into comfort.</p>
+
+  <div class="why r1"><div class="rank">1</div><div>
+    <h4>Condensers undersized on the 1st &amp; 2nd storeys</h4>
+    <p>Living/dining/kitchen (S2) and bedrooms (S3) have only <b>75%</b> of required cooling. On hot
+    afternoons the compressors saturate at 100% and room temperature drifts above setpoint. This is the
+    primary driver of the complaint.</p></div></div>
+
+  <div class="why r2"><div class="rank">2</div><div>
+    <h4>Indoor fan-coils smaller than room peak loads</h4>
+    <p>Wet Kitchen (49%), Bedroom 3 (56%), Bedroom 2 (60%), WIW (60%). Even with a healthy condenser, an
+    undersized coil + airflow can't move enough heat out of the room — these spaces would lag regardless.</p></div></div>
+
+  <div class="why r3"><div class="rank">3</div><div>
+    <h4>Very cold 23 °C design setpoint</h4>
+    <p>Designing (and running) at 23 °C both inflates the load and de-rates VRV capacity. The same equipment
+    that's 18% short at 23 °C would be much closer to adequate at 24–25 °C.</p></div></div>
+
+  <div class="why r4"><div class="rank">4</div><div>
+    <h4>Unshaded full-height single-glazed glass (U 5.89, SC 0.70)</h4>
+    <p>The dominant heat-gain path and a radiant-comfort problem: occupants feel heat radiating off the glass
+    even when air temperature is correct. No curtains/blinds were modelled or (apparently) fitted.</p></div></div>
+
+  <div class="why r5"><div class="rank">5</div><div>
+    <h4>No dehumidified fresh air to bedrooms + exhaust-fan depressurisation</h4>
+    <p>Bedrooms have "No Outdoor Air intake"; toilet exhaust fans pull in hot humid air. High humidity makes
+    rooms feel hot and sticky even at the temperature setpoint, and loads the coils with latent heat.</p></div></div>
+
+  <div class="why r6"><div class="rank">6</div><div>
+    <h4>Tall ceilings (3.5–4.4 m) → stratification</h4>
+    <p>Large volumes with warm air pooling in the occupied zone if supply throw/return is not commissioned for
+    the height. Worsens the "hot" feeling at head height.</p></div></div>
+
+  <div class="callout cause">
+    <b>Before spending on new equipment — rule out faults first.</b> An undersized system and a <i>faulty</i>
+    system produce the same symptom. A low refrigerant charge / R410A leak, a tripped or non-running compressor,
+    fouled coils/filters, or condensers short-cycling hot air on the roof can each strip 10–30% of capacity.
+    A 1–2 day commissioning audit must come first (see Action Plan).
+  </div>
+
+  <!-- ============ SOLUTIONS ============ -->
+  <h2 id="solutions"><span class="n">6</span>Solution Options — Compared</h2>
+  <p class="lead">Three packages, from "tune what's there" to "fix it properly". They are cumulative: A should be
+  done first regardless, and is a prerequisite for deciding how far B/C need to go.</p>
+
+  <div class="grid opt">
+    <div class="card">
+      <h4>Option A — Optimise &amp; Commission</h4>
+      <span class="price">Lowest cost · days</span>
+      <div class="rate">Effort <span class="dots" style="color:var(--ok)">●○○○○</span></div>
+      <div class="rate">Comfort gain <span class="dots" style="color:var(--warn)">●●○○○</span></div>
+      <ul class="clean" style="font-size:13.5px">
+        <li>Full VRV commissioning audit: refrigerant charge / leak test, compressor &amp; fan operation, error logs.</li>
+        <li>Clean coils &amp; filters; set fans to High; verify thermostat sensing &amp; calibration.</li>
+        <li>Check roof condenser layout for hot-air recirculation / short-cycling and clearances.</li>
+        <li>Add solar film + blinds/curtains to full-height glazing.</li>
+        <li>Reset realistic setpoint (24–25 °C); balance airflow.</li>
+      </ul>
+      <p class="note">Recovers "lost" capacity and cuts load — may be enough for the milder rooms, and quantifies
+      the true remaining shortfall.</p>
+    </div>
+
+    <div class="card">
+      <h4>Option B — Targeted Retrofit</h4>
+      <span class="price">Medium cost · weeks</span>
+      <div class="rate">Effort <span class="dots" style="color:var(--warn)">●●●○○</span></div>
+      <div class="rate">Comfort gain <span class="dots" style="color:var(--ok)">●●●●○</span></div>
+      <ul class="clean" style="font-size:13.5px">
+        <li>Everything in A, plus:</li>
+        <li>Upsize the <b>worst indoor units</b> (Wet Kitchen, Bedrooms 1–3, WIW) to match room peaks.</li>
+        <li>Split the shared Dining+Dry-Kitchen coil into two correctly-sized units.</li>
+        <li>Add Low-E solar film (target SC ≈ 0.30) on all full-height glass — cuts solar gain ~50%.</li>
+        <li>Add ceiling fans / destratification for the tall rooms; supplementary dehumidifiers to bedrooms.</li>
+      </ul>
+      <p class="note">Best value-for-money: directly fixes the starved rooms and shaves load so the existing
+      condensers cope on more days. Won't fully cure a peak-day condenser shortfall.</p>
+    </div>
+
+    <div class="card">
+      <h4>Option C — Proper Re-Sizing</h4>
+      <span class="price">Highest cost · project</span>
+      <div class="rate">Effort <span class="dots" style="color:var(--bad)">●●●●●</span></div>
+      <div class="rate">Comfort gain <span class="dots" style="color:var(--ok)">●●●●●</span></div>
+      <ul class="clean" style="font-size:13.5px">
+        <li>Everything in A + B, plus:</li>
+        <li>Replace/augment undersized condensers — <b>S2 1st storey</b> (RXQ12→RXQ16) and
+        <b>S3 2nd storey</b> (RXQ10→RXQ14), or re-zone into more systems.</li>
+        <li>Add a dedicated fresh-air / ERV system with dehumidification to bedrooms &amp; living.</li>
+        <li>Optional envelope upgrade: double-glazed Low-E glass, external shading, roof insulation.</li>
+      </ul>
+      <p class="note">The definitive fix that makes the home hold 23–24 °C on the worst day. Highest cost and
+      disruption; justified if A+B don't close the gap or the owner wants design-point performance.</p>
+    </div>
+  </div>
+  <p class="note">Cost bands are relative orders of magnitude, not quotes — firm pricing needs a site survey and
+  supplier RFQs. Effort/comfort ratings are qualitative engineering judgement.</p>
+
+  <!-- ============ ACTION PLAN ============ -->
+  <h2 id="plan"><span class="n">7</span>Recommended Action Plan</h2>
+  <div class="panel rec">
+    <div class="step"><div class="num"></div><div>
+      <b>Commissioning &amp; fault audit (Week 1).</b> Before any spend on equipment, have the contractor
+      verify refrigerant charge/leaks, compressor &amp; fan operation, coil/filter condition, thermostat
+      sensing, and roof condenser airflow. Log delivered capacity vs. nameplate per system.</div></div>
+    <div class="step"><div class="num"></div><div>
+      <b>Data-log the worst rooms (Week 1–2).</b> Put temperature/RH loggers in Wet Kitchen, Bedrooms 1–3,
+      Living and Dining over hot afternoons to confirm <i>which</i> rooms actually drift and by how much —
+      this separates true undersizing from faults and right-sizes the fix.</div></div>
+    <div class="step"><div class="num"></div><div>
+      <b>Quick wins (Week 2).</b> Solar film + blinds on full-height glazing, fans to High, setpoint to
+      24–25 °C, airflow balanced. Re-measure — many rooms may now satisfy.</div></div>
+    <div class="step"><div class="num"></div><div>
+      <b>Targeted retrofit (Option B).</b> Upsize the confirmed-starved indoor units and split the
+      Dining/Dry-Kitchen coil. Add bedroom dehumidification / fresh air.</div></div>
+    <div class="step"><div class="num"></div><div>
+      <b>Decide on condenser re-sizing (Option C).</b> If logged data still shows the 1st/2nd storey
+      condensers saturating on peak days, plan RXQ12→RXQ16 (S2) and RXQ10→RXQ14 (S3), or re-zoning, as a
+      scheduled works package.</div></div>
+    <div class="step"><div class="num"></div><div>
+      <b>Re-issue the heat-load calc at the agreed setpoint.</b> Re-run DK-BIM at 24–25 °C with shading/blinds
+      credited and correct LED lighting watts, to confirm the final equipment selection and avoid over- or
+      under-shooting.</div></div>
+  </div>
+
+  <footer>
+    <b>Sources analysed</b>
+    <div class="src">• <span class="kbd">AIRCON Jalan Merlimau No 15_HL R0_AlexY_ZX.pdf</span> — Daikin DK-BIM Heat Load Calculation, Summary Report, Revision 0 (issued 10 Jun 2026, author ZX).</div>
+    <div class="src">• <span class="kbd">ACMV AS-Build drawing RevA.pdf</span> — ACMV As-Built layouts (Basement / 1st / 2nd / Attic / Roof) + Equipment Schedule, Indoxing Group Pte Ltd, drawn CKT, 8 Feb 2025.</div>
+    <p class="src" style="margin-top:14px">Prepared as an independent engineering review. Nominal VRV capacities are
+    manufacturer ratings at standard test conditions; actual delivered capacity at the project's 23 °C indoor
+    design point will be lower. Cost indications are relative and require supplier quotation. Verify all field
+    conditions and equipment serial/spec on site before procurement.</p>
+  </footer>
+
+</div>
+</body>
+</html>
